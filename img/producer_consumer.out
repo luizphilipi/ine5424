@@ -1,0 +1,39 @@
+Setting up this machine as follows: 
+  Processor:    IA32 at 2498 MHz (BUS clock = 125 MHz)
+  Memory:       262144 Kbytes [0x00000000:0x10000000]
+  User memory:  261820 Kbytes [0x00000000:0x0ffaf000]
+  PCI aperture: 44936 Kbytes [0xfc000000:0xfebe2020]
+  Node Id:      will get from the network!
+  Setup:        20192 bytes
+  APP code:     16064 bytes	data: 640 bytes
+P->a	P->b	P->c	P->d	C<-a	C<-b	C<-c	C
+<-d	P->e	P->f	C<-e	C<-f	P->g	P->h	C
+<-g	C<-h	P->i	P->j	C<-i	C<-j	P->k	C
+<-k	P->l	C<-l	P->m	C<-m	P->n	C<-n	P
+->o	C<-o	P->p	P->a	P->b	P->c	P->d	C
+<-p	C<-a	C<-b	C<-c	C<-d	P->e	P->f	C
+<-e	C<-f	P->g	P->h	C<-g	C<-h	P->i	P
+->j	C<-i	C<-j	P->k	C<-k	P->l	C<-l	P
+->m	C<-m	P->n	C<-n	P->o	C<-o	P->p	P
+->a	P->b	P->c	P->d	C<-p	C<-a	C<-b	C
+<-c	C<-d	P->e	P->f	C<-e	C<-f	P->g	P
+->h	C<-g	C<-h	P->i	P->j	C<-i	C<-j	P
+->k	C<-k	P->l	C<-l	P->m	C<-m	P->n	C
+<-n	P->o	C<-o	P->p	P->a	P->b	P->c	P
+->d	C<-p	C<-a	C<-b	C<-c	C<-d	P->e	P
+->f	C<-e	C<-f	P->g	P->h	C<-g	C<-h	P
+->i	P->j	C<-i	C<-j	P->k	C<-k	P->l	C
+<-l	P->m	C<-m	P->n	C<-n	P->o	C<-o	P
+->p	P->a	P->b	P->c	P->d	C<-p	C<-a	C
+<-b	C<-c	C<-d	P->e	P->f	C<-e	C<-f	P
+->g	P->h	C<-g	C<-h	P->i	P->j	C<-i	C
+<-j	P->k	C<-k	P->l	C<-l	P->m	C<-m	P
+->n	C<-n	P->o	C<-o	P->p	P->a	P->b	P
+->c	P->d	C<-p	C<-a	C<-b	C<-c	C<-d	P
+->e	P->f	C<-e	C<-f	P->g	P->h	C<-g	C
+<-h	P->i	P->j	C<-i	C<-j	P->k	C<-k	P
+->l	C<-l	P->m	C<-m	P->n	C<-n	P->o	C
+<-o	P->p	P->a	P->b	P->c	P->d	C<-p	C
+<-a	C<-b	C<-c	C<-d	The end!
+The last thread in the system has exited!
+Rebooting the machine ...
