@@ -92,7 +92,6 @@ int main() {
 		cout << "Philosopher " << i << " ate " << ret << " times \n";
 		table.v();
 	}
-	cout << "terminou \n";
 	for (int i = 0; i < 5; i++)
 		delete chopstick[i];
 	for (int i = 0; i < 5; i++)

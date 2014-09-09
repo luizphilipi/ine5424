@@ -51,7 +51,7 @@ Thread::~Thread() {
 		_refSleeping->remove(this);
 	}
 
-	if (_threadJoined != 0) {
+	if (_threadJoined) {
 		_threadJoined->resume();
 	}
 
@@ -66,14 +66,12 @@ int Thread::join() {
 	db<Thread>(TRC) << "Thread::join(this=" << this << ",state=" << _state
 			<< ")" << endl;
 
-	//while(_state != FINISHING)
-	//    yield(); // implicit unlock()
 
+//	assert(_state != FINISHING);
 	if (_state != FINISHING) {
 		_threadJoined = running();
 		_threadJoined->suspend();
 	}
-
 	unlock();
 
 	return *static_cast<int *>(_stack);
@@ -132,9 +130,9 @@ void Thread::resume() {
 }
 
 void Thread::sleep(Queue *sleepingQ) {
-	lock();
-
 	db<Thread>(TRC) << "Thread::sleep(this=" << this << ")" << endl;
+
+	assert(locked());
 
 	while (_ready.empty()) {
 		idle();
@@ -153,7 +151,7 @@ void Thread::sleep(Queue *sleepingQ) {
 }
 
 void Thread::wakeup(Queue* _sleeping) {
-	lock();
+	assert(locked());
 
 	if (!_sleeping->empty()) {
 		Thread * wkup_thread = _sleeping->remove()->object();
@@ -163,6 +161,9 @@ void Thread::wakeup(Queue* _sleeping) {
 	}
 
 	unlock();
+
+	if (preemptive)
+		reschedule();
 }
 
 // Class methods
@@ -191,7 +192,7 @@ void Thread::exit(int status) {
 	db<Thread>(TRC) << "Thread::wakeup_all(running=" << running() << ")"
 			<< endl;
 
-	if (_running->_threadJoined != 0) {
+	if (_running->_threadJoined) {
 		_running->_threadJoined->resume();
 		_running->_threadJoined = 0;
 	}
