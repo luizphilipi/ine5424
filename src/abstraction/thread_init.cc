@@ -20,9 +20,12 @@ void Thread::init()
 
     db<Init, Thread>(INF) << "Dispatching the first thread: " << _running << endl;
 
+    new (kmalloc(sizeof(Thread))) Thread();
+
     This_Thread::not_booting();
 
     _running->_context->load();
+
 }
 
 __END_SYS

@@ -40,6 +40,18 @@ public:
 	// Thread Queue
 	typedef Ordered_Queue<Thread, Priority> Queue;
 
+private:
+	Thread() :
+			_state(READY), _refSleeping(0), _threadJoined(0), _link(this,
+					0-1) {
+		lock();
+
+		_stack = kmalloc(STACK_SIZE);
+		_context = CPU::init_stack(_stack, STACK_SIZE, &implicit_exit, idle);
+
+		common_constructor(idle, STACK_SIZE); // implicit unlock
+	}
+
 public:
 	Thread(int (*entry)(), const State & state = READY,
 			const Priority & priority = NORMAL, unsigned int stack_size =
@@ -167,7 +179,7 @@ protected:
 	Context * volatile _context;
 	volatile State _state;
 	Queue * _refSleeping;
-	Thread * _threadJoined;
+	Thread * volatile _threadJoined;
 	Queue::Element _link;
 
 	static Scheduler_Timer * _timer;

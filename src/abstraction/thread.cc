@@ -66,8 +66,6 @@ int Thread::join() {
 	db<Thread>(TRC) << "Thread::join(this=" << this << ",state=" << _state
 			<< ")" << endl;
 
-
-//	assert(_state != FINISHING);
 	if (_state != FINISHING) {
 		_threadJoined = running();
 		_threadJoined->suspend();
@@ -106,13 +104,12 @@ void Thread::suspend() {
 	_state = SUSPENDED;
 	_suspended.insert(&_link);
 
-	if ((_running == this) && !_ready.empty()) {
+	if ((_running == this)) {
 		_running = _ready.remove()->object();
 		_running->_state = RUNNING;
 
 		dispatch(this, _running);
-	} else
-		idle(); // implicit unlock()
+	}
 
 	unlock();
 }
@@ -134,9 +131,9 @@ void Thread::sleep(Queue *sleepingQ) {
 
 	assert(locked());
 
-	while (_ready.empty()) {
-		idle();
-	}
+//	while (_ready.empty()) {
+//			idle();
+//	}
 
 	_refSleeping = sleepingQ;
 	_state = WAITING;
@@ -172,16 +169,14 @@ void Thread::yield() {
 
 	db<Thread>(TRC) << "Thread::yield(running=" << _running << ")" << endl;
 
-	if (!_ready.empty()) {
-		Thread * prev = _running;
-		prev->_state = READY;
-		_ready.insert(&prev->_link);
+	Thread * prev = _running;
+	prev->_state = READY;
+	_ready.insert(&prev->_link);
 
-		_running = _ready.remove()->object();
-		_running->_state = RUNNING;
+	_running = _ready.remove()->object();
+	_running->_state = RUNNING;
 
-		dispatch(prev, _running);
-	}
+	dispatch(prev, _running);
 
 	unlock();
 }
@@ -197,30 +192,16 @@ void Thread::exit(int status) {
 		_running->_threadJoined = 0;
 	}
 
-	while (_ready.empty() && !_suspended.empty())
-		idle(); // implicit unlock();
-
 	lock();
 
-	if (!_ready.empty()) {
-		Thread * prev = _running;
-		prev->_state = FINISHING;
-		*static_cast<int *>(prev->_stack) = status;
+	Thread * prev = _running;
+	prev->_state = FINISHING;
+	*static_cast<int *>(prev->_stack) = status;
 
-		_running = _ready.remove()->object();
-		_running->_state = RUNNING;
+	_running = _ready.remove()->object();
+	_running->_state = RUNNING;
 
-		dispatch(prev, _running);
-	} else {
-		db<Thread>(WRN) << "The last thread in the system has exited!\n";
-		if (reboot) {
-			db<Thread>(WRN) << "Rebooting the machine ...\n";
-			Machine::reboot();
-		} else {
-			db<Thread>(WRN) << "Halting the CPU ...\n";
-			CPU::halt();
-		}
-	}
+	dispatch(prev, _running);
 
 	unlock();
 }
@@ -236,12 +217,25 @@ void Thread::implicit_exit() {
 int Thread::idle() {
 	db<Thread>(TRC) << "Thread::idle()" << endl;
 
-	db<Thread>(INF) << "There are no runnable threads at the moment!" << endl;
-	db<Thread>(INF) << "Halting the CPU ..." << endl;
-
-	CPU::int_enable();
-	CPU::halt();
-
+	while (true) {
+		if (_suspended.empty() && !running()->_refSleeping) {
+			db<Thread>(WRN) << "The last thread in the system has exited!\n";
+			if (reboot) {
+				db<Thread>(WRN) << "Rebooting the machine ...\n";
+				Machine::reboot();
+			} else {
+				db<Thread>(INF) << "Halting the CPU ..." << endl;
+				CPU::int_disable();
+				CPU::halt();
+			}
+		} else {
+			db<Thread>(INF) << "There are no runnable threads at the moment!"
+					<< endl;
+			db<Thread>(INF) << "Halting the CPU ..." << endl;
+			CPU::int_enable();
+			CPU::halt();
+		}
+	}
 	return 0;
 }
 

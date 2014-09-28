@@ -28,7 +28,7 @@
 #define MACH pc
 #define __MACH_TRAITS_H	        __HEADER_MACH(traits)
 
-#define APPLICATION producer_consumer
+#define APPLICATION philosophers_dinner
 #define __APPLICATION_TRAITS_H  __HEADER_APPLICATION(APPLICATION)
 
 //============================================================================

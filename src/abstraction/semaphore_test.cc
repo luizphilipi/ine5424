@@ -29,7 +29,7 @@ int philosopher(int n, int l, int c) {
 		cout << "thinking";
 		table.v();
 
-		Delay thinking(500000);
+		Delay thinking(1000000);
 
 		chopstick[first]->p();   // get first chopstick
 		chopstick[second]->p();   // get second chopstick
@@ -39,7 +39,7 @@ int philosopher(int n, int l, int c) {
 		cout << " eating ";
 		table.v();
 
-		Delay eating(250000);
+		Delay eating(500000);
 
 		chopstick[first]->v();   // release first chopstick
 		chopstick[second]->v();   // release second chopstick
